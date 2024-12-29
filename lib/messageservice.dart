@@ -1,51 +1,53 @@
 import 'package:flutter/material.dart';
 
-class WorkerMessagingPage extends StatefulWidget {
+class ServiceProviderMessagingPage extends StatefulWidget {
   @override
-  _WorkerMessagingPageState createState() => _WorkerMessagingPageState();
+  _ServiceProviderMessagingPageState createState() =>
+      _ServiceProviderMessagingPageState();
 }
 
-class _WorkerMessagingPageState extends State<WorkerMessagingPage> {
-  // قائمة المستخدمين مع سجل المحادثات لكل منهم
-  final List<Map<String, dynamic>> users = [
+class _ServiceProviderMessagingPageState
+    extends State<ServiceProviderMessagingPage> {
+  // قائمة مقدمي الخدمات وسجل المحادثات لكل منهم
+  final List<Map<String, dynamic>> serviceProviders = [
     {
-      "name": "مالك الأرض أحمد",
+      "name": "محمد أحمد",
       "chats": [
         {
-          "text": "مرحبًا، هل يمكنك العمل غدًا؟",
+          "text": "مرحبًا، نحتاج لنقل 5 أطنان من الحبوب.",
           "isSent": false,
-          "time": "10:00 ص"
+          "time": "12:00 م"
         },
-        {"text": "بالتأكيد، سأكون متاحًا.", "isSent": true, "time": "10:01 ص"},
+        {"text": "Ali", "isSent": true, "time": "12:05 م"},
       ],
     },
     {
-      "name": "مالك الأرض فاطمة",
+      "name": "جعفر",
       "chats": [
         {
-          "text": "هل يمكنني ضمان الأرض للموسم القادم؟",
+          "text": "هل يمكن عصر 10 أطنان من الزيتون؟",
           "isSent": false,
-          "time": "09:30 ص"
+          "time": "03:30 م"
         },
         {
-          "text": "سأراجع التفاصيل وأرد عليك.",
+          "text": "نعم، الموعد متاح غدًا الساعة 9 صباحًا.",
           "isSent": true,
-          "time": "09:31 ص"
+          "time": "03:35 م"
         },
       ],
     },
     {
-      "name": "مالك الأرض عمر",
+      "name": "حسن أنيس",
       "chats": [
         {
-          "text": "لدينا عمل حراثة الأسبوع المقبل.",
+          "text": "نحتاج لطحن 2 طن من القمح هذا الأسبوع.",
           "isSent": false,
-          "time": "08:15 ص"
+          "time": "11:15 ص"
         },
         {
-          "text": "ممتاز. سأجهز الأدوات المطلوبة.",
+          "text": "تم حجز الموعد ليوم الخميس الساعة 10 صباحًا.",
           "isSent": true,
-          "time": "08:16 ص"
+          "time": "11:20 ص"
         },
       ],
     },
@@ -72,75 +74,25 @@ class _WorkerMessagingPageState extends State<WorkerMessagingPage> {
           ),
         ),
         child: ListView.builder(
-          itemCount: users.length,
+          itemCount: serviceProviders.length,
           itemBuilder: (context, index) {
-            final user = users[index];
-            final lastMessage = user["chats"].isNotEmpty
-                ? user["chats"].last["text"]
+            final provider = serviceProviders[index];
+            final lastMessage = provider["chats"].isNotEmpty
+                ? provider["chats"].last["text"]
                 : "لا توجد رسائل بعد.";
-            final lastTime =
-                user["chats"].isNotEmpty ? user["chats"].last["time"] : "";
+            final lastTime = provider["chats"].isNotEmpty
+                ? provider["chats"].last["time"]
+                : "";
             return GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => WorkerChatPage(
-                      userName: user["name"],
-                      chats: user["chats"],
+                    builder: (context) => ServiceProviderChatPage(
+                      providerName: provider["name"],
+                      chats: provider["chats"],
                     ),
                   ),
-                );
-              },
-              onLongPress: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return Container(
-                      padding: const EdgeInsets.all(10),
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        ),
-                        title: const Text(
-                          "حذف المحادثة",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text("تأكيد الحذف"),
-                                content: Text(
-                                    "هل أنت متأكد أنك تريد حذف المحادثة مع ${user["name"]}؟"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text("إلغاء"),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        users.removeAt(index);
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text("حذف",
-                                        style: TextStyle(color: Colors.red)),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    );
-                  },
                 );
               },
               child: Card(
@@ -153,7 +105,7 @@ class _WorkerMessagingPageState extends State<WorkerMessagingPage> {
                   leading: CircleAvatar(
                     backgroundColor: const Color(0xFF81C784),
                     child: Text(
-                      user["name"][0],
+                      provider["name"][0],
                       style: const TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   ),
@@ -161,7 +113,7 @@ class _WorkerMessagingPageState extends State<WorkerMessagingPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        user["name"],
+                        provider["name"],
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -192,18 +144,20 @@ class _WorkerMessagingPageState extends State<WorkerMessagingPage> {
   }
 }
 
-class WorkerChatPage extends StatefulWidget {
-  final String userName;
+class ServiceProviderChatPage extends StatefulWidget {
+  final String providerName;
   final List<Map<String, dynamic>> chats;
 
-  const WorkerChatPage({Key? key, required this.userName, required this.chats})
+  const ServiceProviderChatPage(
+      {Key? key, required this.providerName, required this.chats})
       : super(key: key);
 
   @override
-  _WorkerChatPageState createState() => _WorkerChatPageState();
+  _ServiceProviderChatPageState createState() =>
+      _ServiceProviderChatPageState();
 }
 
-class _WorkerChatPageState extends State<WorkerChatPage> {
+class _ServiceProviderChatPageState extends State<ServiceProviderChatPage> {
   late List<Map<String, dynamic>> messages;
   final TextEditingController _messageController = TextEditingController();
 
@@ -231,7 +185,7 @@ class _WorkerChatPageState extends State<WorkerChatPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.userName,
+          widget.providerName,
           style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color(0xFF4CAF50),

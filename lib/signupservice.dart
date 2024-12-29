@@ -12,36 +12,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final List<TextEditingController> _carNumberControllers = [];
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.serviceType == 'نقليات') {
-      _addCarNumberField(); // Start with one car number field
-    }
-  }
-
-  void _addCarNumberField() {
-    setState(() {
-      _carNumberControllers.add(TextEditingController());
-    });
-  }
-
-  void _removeCarNumberField(int index) {
-    setState(() {
-      _carNumberControllers.removeAt(index);
-    });
-  }
-
-  @override
-  void dispose() {
-    for (var controller in _carNumberControllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +34,7 @@ class _SignUpPageState extends State<SignUpPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // العبارة الترحيبية
+            // Welcome Section
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -82,7 +52,7 @@ class _SignUpPageState extends State<SignUpPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.assignment, size: 60, color: Colors.white),
+                  const Icon(Icons.person_outline, size: 60, color: Colors.white),
                   const SizedBox(height: 10),
                   const Text(
                     "مرحبا بك!",
@@ -107,7 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             const SizedBox(height: 20),
 
-            // حقل نوع الخدمة (معبأ مسبقًا وغير قابل للتعديل)
+            // Service Type Field (Read-Only)
             _buildTextField(
               label: "نوع الخدمة",
               value: widget.serviceType,
@@ -116,80 +86,19 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             const SizedBox(height: 20),
 
-            // الحقول الأخرى بناءً على نوع الخدمة
+            // Dynamic Fields Based on Service Type
             ..._getFieldsForService(widget.serviceType).map((field) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: _buildTextField(
                     label: field,
-                    icon: field == 'رابط الفيسبوك'
-                        ? Icons.link
-                        : field == 'كلمة السر'
-                            ? Icons.lock
-                            : Icons.input,
-                    isLinkField: field == 'رابط الفيسبوك' &&
-                        widget.serviceType != 'منتجات زراعية',
-                    isPasswordField: field == 'كلمة السر',
+                    icon: _getIconForField(field),
                   ),
                 )),
 
-            // حقل أرقام السيارات في حالة النقليات
-            if (widget.serviceType == 'نقليات') ...[
-              const SizedBox(height: 20),
-              const Text(
-                "أرقام السيارات:",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF556B2F),
-                ),
-              ),
-              const SizedBox(height: 10),
-              ..._carNumberControllers.asMap().entries.map((entry) {
-                final index = entry.key;
-                final controller = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: controller,
-                          decoration: InputDecoration(
-                            labelText: "رقم السيارة ${index + 1}",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      IconButton(
-                        onPressed: () => _removeCarNumberField(index),
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-              ElevatedButton.icon(
-                onPressed: _addCarNumberField,
-                icon: const Icon(Icons.add, color: Colors.white),
-                label: const Text("إضافة رقم سيارة جديد"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF556B2F),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-              ),
-            ],
             const SizedBox(height: 30),
 
             ElevatedButton.icon(
               onPressed: () {
-                // Navigate to HomePage with user data
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -199,7 +108,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 );
               },
-              icon: const Icon(Icons.send, color: Colors.white),
+              icon: const Icon(Icons.check_circle_outline, color: Colors.white),
               label: const Text(
                 "تسجيل",
                 style: TextStyle(fontSize: 18, color: Colors.white),
@@ -223,31 +132,41 @@ class _SignUpPageState extends State<SignUpPage> {
     String? value,
     bool readOnly = false,
     IconData? icon,
-    bool isLinkField = false,
-    bool isPasswordField = false,
   }) {
     return TextField(
       controller: value != null ? TextEditingController(text: value) : null,
       readOnly: readOnly,
-      keyboardType:
-          isLinkField ? TextInputType.url : TextInputType.text, // نوع الإدخال
-      obscureText: isPasswordField, // إخفاء النص إذا كان حقل كلمة السر
-      textInputAction: isLinkField
-          ? TextInputAction.go
-          : TextInputAction.next, // حركة الكيبورد
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon:
-            icon != null ? Icon(icon, color: const Color(0xFF556B2F)) : null,
+        prefixIcon: icon != null ? Icon(icon, color: const Color(0xFF556B2F)) : null,
         labelStyle: const TextStyle(color: Color(0xFF556B2F)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),
         filled: true,
         fillColor: Colors.white,
-        hintText: isLinkField ? 'https://example.com' : null, // النص التوضيحي
       ),
     );
+  }
+
+  IconData _getIconForField(String field) {
+    switch (field) {
+      case 'رابط الفيسبوك':
+        return Icons.link;
+      case 'كلمة السر':
+        return Icons.lock;
+      case 'رقم الهاتف':
+        return Icons.phone;
+      case 'عنوان المعصرة':
+      case 'عنوان المطحنة':
+      case 'عنوان الحسبة':
+      case 'عنوان المتجر':
+        return Icons.location_on;
+      case 'اسم المالك':
+        return Icons.person;
+      default:
+        return Icons.text_fields;
+    }
   }
 
   List<String> _getFieldsForService(String serviceType) {

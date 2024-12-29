@@ -147,7 +147,6 @@ class _AdvertisePageState extends State<AdvertisePage>
   Widget _buildListTile(Map<String, dynamic> option) {
     return GestureDetector(
       onTap: () {
-        // Navigate to the SignUpPage with the selected service type
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -169,23 +168,31 @@ class _AdvertisePageState extends State<AdvertisePage>
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(option['icon'], size: 40, color: const Color(0xFF556B2F)),
-              const SizedBox(width: 15),
-              Text(
-                option['label'],
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF556B2F),
-                  letterSpacing: 1.2,
-                ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            splashColor: Colors.green.withOpacity(0.2),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(option['icon'],
+                      size: 40, color: const Color(0xFF556B2F)),
+                  const SizedBox(width: 15),
+                  Text(
+                    option['label'],
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF556B2F),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

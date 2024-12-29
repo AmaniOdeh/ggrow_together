@@ -75,9 +75,9 @@ class _ProjectInfoPageState extends State<ProjectInfoPage>
             child: Column(
               children: [
                 const Spacer(),
-                _buildAnimatedText(
-                  text: "Welcome to 'Grow Together' Project",
-                  delay: 0,
+                _buildRichText(
+                  arabicText: "مرحباً بك في مشروع",
+                  englishText: "\"Grow Together\"",
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF556B2F),
@@ -98,10 +98,10 @@ class _ProjectInfoPageState extends State<ProjectInfoPage>
                         ),
                       ],
                     ),
-                    child: _buildAnimatedText(
-                      text:
-                          "Grow Together aims to optimize agricultural land use by connecting landowners with skilled laborers.",
-                      delay: 300,
+                    child: _buildRichText(
+                      arabicText: "يهدف مشروع",
+                      englishText:
+                          "\"Grow Together\" إلى تحسين استخدام الأراضي الزراعية من خلال ربط أصحاب الأراضي بالعمال المهرة.",
                       fontSize: 16,
                       color: Colors.white,
                     ),
@@ -127,9 +127,7 @@ class _ProjectInfoPageState extends State<ProjectInfoPage>
                               Flexible(
                                 child: _buildSignupOption(
                                   icon: Icons.terrain,
-                                  label: "Land Owner",
-                                  description:
-                                      "Register your land and find skilled laborers.",
+                                  label: "صاحب أرض",
                                   isHovering: _isHoveringOwner,
                                   onHover: (hovering) => setState(() {
                                     _isHoveringOwner = hovering;
@@ -146,9 +144,7 @@ class _ProjectInfoPageState extends State<ProjectInfoPage>
                               Flexible(
                                 child: _buildSignupOption(
                                   icon: Icons.person,
-                                  label: "Worker",
-                                  description:
-                                      "Register as a worker to offer your skills.",
+                                  label: "عامل",
                                   isHovering: _isHoveringWorker,
                                   onHover: (hovering) => setState(() {
                                     _isHoveringWorker = hovering;
@@ -169,8 +165,7 @@ class _ProjectInfoPageState extends State<ProjectInfoPage>
                             width: 180,
                             child: _buildSignupOption(
                               icon: Icons.campaign,
-                              label: "Advertise with Us",
-                              description: "Promote your services here.",
+                              label: "أعلن معنا",
                               isHovering: _isHoveringAdvertise,
                               onHover: (hovering) => setState(() {
                                 _isHoveringAdvertise = hovering;
@@ -178,8 +173,7 @@ class _ProjectInfoPageState extends State<ProjectInfoPage>
                               onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      AdvertisePage(), // اسم الصفحة التي قمت بإنشائها
+                                  builder: (context) => AdvertisePage(),
                                 ),
                               ),
                             ),
@@ -198,25 +192,36 @@ class _ProjectInfoPageState extends State<ProjectInfoPage>
     );
   }
 
-  Widget _buildAnimatedText({
-    required String text,
-    required int delay,
+  Widget _buildRichText({
+    required String arabicText,
+    required String englishText,
     double? fontSize,
     FontWeight? fontWeight,
     Color? color,
   }) {
-    return AnimatedOpacity(
-      opacity: 1.0,
-      duration: const Duration(milliseconds: 1000),
-      curve: Curves.easeIn,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          color: color ?? Colors.black,
-        ),
-        textAlign: TextAlign.center,
+    return RichText(
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.rtl,
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: arabicText,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: color ?? Colors.black,
+            ),
+          ),
+          const TextSpan(text: ' '),
+          TextSpan(
+            text: englishText,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: color ?? Colors.green,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -224,7 +229,6 @@ class _ProjectInfoPageState extends State<ProjectInfoPage>
   Widget _buildSignupOption({
     required IconData icon,
     required String label,
-    required String description,
     required VoidCallback onTap,
     required Function(bool) onHover,
     required bool isHovering,

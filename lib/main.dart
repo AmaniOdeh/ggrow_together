@@ -61,7 +61,7 @@ class WelcomePage extends StatelessWidget {
                       context, '/info'); // الانتقال إلى صفحة ProjectInfoPage
                 },
                 child: const Text(
-                  'Get Started',
+                  'ابدأ الاّن',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,

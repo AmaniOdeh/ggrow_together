@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-
+import 'adsservice.dart';
+import 'allmyworkerser.dart';
+import 'createads.dart';
+import 'messageservice.dart';
+import 'myorderservice.dart';
+import 'notificationservice.dart';
+import 'profileservice.dart';
 
 class HomePage extends StatelessWidget {
   final String serviceType;
@@ -8,18 +14,10 @@ class HomePage extends StatelessWidget {
 
   HomePage({required this.serviceType, this.prefilledData});
   final List<Map<String, String>> ads = [
-    {"title": "أرض 1 - ضمان", "image": "lands/ads1.png", "type": "ضمان"},
-    {"title": "أرض 2 - ضمان", "image": "lands/ads2.png", "type": "ضمان"},
-    {
-      "title": "أرض 3 - غير ضمان",
-      "image": "lands/ads3.png",
-      "type": "غير ضمان"
-    },
-    {
-      "title": "أرض 4 - غير ضمان",
-      "image": "lands/ads4.png",
-      "type": "غير ضمان"
-    },
+    {"title": "عامل 1 ", "image": "lands/ads1.png"},
+    {"title": "عامل 2 ", "image": "lands/ads2.png"},
+    {"title": "عامل 3 ", "image": "lands/ads3.png"},
+    {"title": "عامل 4", "image": "lands/ads4.png"},
   ];
 
   @override
@@ -40,12 +38,14 @@ class HomePage extends StatelessWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: Color(0xFF556B2F)),
-            onPressed: () {},
-          ),
-          IconButton(
             icon: const Icon(Icons.message, color: Color(0xFF556B2F)),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ServiceProviderMessagingPage()),
+              );
+            },
           ),
         ],
       ),
@@ -55,13 +55,19 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Ad Sections
-            _buildSectionHeader("إعلانات الأراضي"),
+            _buildSectionHeader("إعلانات العمال"),
             _buildAdSection(context),
             const SizedBox(height: 20),
 
             ElevatedButton.icon(
               onPressed: () {
-               
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CreateAdPage(
+                            serviceType: '',
+                          )),
+                );
               },
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text(
@@ -81,21 +87,25 @@ class HomePage extends StatelessWidget {
 
             // Orders with Progress Circles
             _buildSectionHeader("الطلبات"),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildOrderProgress(
-                    title: "مكتملة",
-                    count: 4309,
-                    progress: 0.8,
-                    color: Colors.green),
+                  title: "مكتملة",
+                  count: 4309,
+                  progress: 4309 / (4309 + 1302),
+                  color: Colors.green,
+                ),
                 _buildOrderProgress(
-                    title: "قيد التنفيذ",
-                    count: 1302,
-                    progress: 0.5,
-                    color: Colors.lightGreen),
+                  title: "قيد التنفيذ",
+                  count: 1302,
+                  progress: 1302 / (4309 + 1302),
+                  color: Colors.lightGreen,
+                ),
               ],
             ),
+
             const SizedBox(height: 20),
 
             // Icons for My Orders and My Lands
@@ -103,11 +113,37 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildIconButton(
-                    title: "My Orders",
-                    icon: Icons.shopping_cart,
-                    onPressed: () {}),
+                  title: "طلباتي",
+                  icon: Icons.shopping_cart,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyOrderPage()),
+                    );
+                  },
+                ),
                 _buildIconButton(
-                    title: "My Lands", icon: Icons.landscape, onPressed: () {}),
+                  title: "العُمال",
+                  icon: Icons.group,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyWorkerPage()),
+                    );
+                  },
+                ),
+                _buildIconButton(
+                  title: "إعلاناتي",
+                  icon: Icons.campaign,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              MyAdsPage()), // أنشئ صفحة MyAdsPage
+                    );
+                  },
+                ),
               ],
             ),
           ],
@@ -169,7 +205,7 @@ class HomePage extends StatelessWidget {
 
   Widget _buildAdSection(BuildContext context) {
     return SizedBox(
-      height: 260, // Increased height to ensure space
+      height: 260,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: ads.length,
@@ -183,7 +219,7 @@ class HomePage extends StatelessWidget {
   Widget _buildAdCard(BuildContext context, Map<String, String> ad) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      width: 230, // Adjust width
+      width: 230,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
         color: Colors.white,
@@ -197,17 +233,20 @@ class HomePage extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-            child: Image.asset(
-              ad["image"]!,
-              height: 130,
-              fit: BoxFit.cover,
+          Padding(
+            padding: const EdgeInsets.only(top: 25.0),
+            child: ClipOval(
+              child: Image.asset(
+                ad["image"]!,
+                height: 100,
+                width: 100,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Text(
             ad["title"]!,
             textAlign: TextAlign.center,
@@ -217,12 +256,12 @@ class HomePage extends StatelessWidget {
               color: Color(0xFF556B2F),
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Center(
             child: ElevatedButton(
               onPressed: () => _showAdDetails(context, ad["title"]!),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: const Color(0xFF556B2F),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -284,29 +323,51 @@ class HomePage extends StatelessWidget {
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     return BottomNavigationBar(
-      selectedItemColor: const Color(0xFF556B2F),
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'الرئيسية',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart),
-          label: 'الطلبات',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.landscape),
-          label: 'الإعلانات',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'الحساب',
-        ),
-      ],
-      onTap: (index) {
-        // Navigate to different pages based on index
-      },
-    );
+        selectedItemColor: const Color(0xFF556B2F),
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'الرئيسية',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'بحث',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'الإشعارات',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'الحساب',
+          ),
+        ],
+        onTap: (index) {
+          switch (index) {
+            case 0: // الرئيسية
+              // البقاء في الصفحة الحالية (لا تفعل شيئًا)
+              break;
+            case 2: // الإشعارات
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      NotificationsPage(), // استبدل بنوع الخدمة
+                ),
+              );
+              break;
+            case 3: // الإشعارات
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ServiceProviderProfilePage(
+                    serviceType: '',
+                  ), // استبدل بنوع الخدمة
+                ),
+              );
+              break;
+          }
+        });
   }
 }

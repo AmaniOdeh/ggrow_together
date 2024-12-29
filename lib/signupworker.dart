@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'signin.dart';
+
+import 'workerhomepage.dart';
 
 class SignUpWorker extends StatefulWidget {
   final String baseUrl;
@@ -14,16 +15,24 @@ class SignUpWorker extends StatefulWidget {
 
 class _SignUpWorkerState extends State<SignUpWorker> {
   final _formKey = GlobalKey<FormState>();
-  String email = '';
-  String password = '';
-  String confirmPassword = '';
-  String username = '';
-  String phoneNumber = '';
-  String skills = '';
-  String tools = '';
-  bool isGuarantor = false; // Checkbox for "هل ترغب أن تكون ضامنًا؟"
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _skillsController = TextEditingController();
+  final TextEditingController _toolsController = TextEditingController();
+  final TextEditingController _workAreasController = TextEditingController();
+  final TextEditingController _governorateController = TextEditingController();
+  final TextEditingController _localityController = TextEditingController();
+  final TextEditingController _streetNameController = TextEditingController();
+
+  bool isGuarantor = false;
   File? _profileImage;
   bool _isPasswordVisible = false;
+  bool showAdditionalFields = false;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -59,18 +68,13 @@ class _SignUpWorkerState extends State<SignUpWorker> {
             children: [
               const Align(
                 alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Worker Registration👷‍♂️",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF556B2F),
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  " 👷‍♂️تسجيل العامل ",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2E7D32),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -78,7 +82,7 @@ class _SignUpWorkerState extends State<SignUpWorker> {
                 child: Stack(
                   children: [
                     CircleAvatar(
-                      radius: 45,
+                      radius: 50,
                       backgroundColor: Colors.grey.shade300,
                       backgroundImage: _profileImage != null
                           ? FileImage(_profileImage!)
@@ -92,12 +96,12 @@ class _SignUpWorkerState extends State<SignUpWorker> {
                       child: GestureDetector(
                         onTap: _pickImage,
                         child: const CircleAvatar(
-                          radius: 14,
+                          radius: 16,
                           backgroundColor: Colors.white,
                           child: Icon(
                             Icons.edit,
                             color: Color(0xFF556B2F),
-                            size: 14,
+                            size: 16,
                           ),
                         ),
                       ),
@@ -106,64 +110,88 @@ class _SignUpWorkerState extends State<SignUpWorker> {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildTextField('Username', (value) => username = value),
-              _buildTextField('Email', (value) => email = value),
-              _buildPasswordField('Password', (value) => password = value),
-              _buildPasswordField('Confirm Password', (value) {
-                confirmPassword = value;
-                if (value != password) {
-                  return 'Passwords do not match';
-                }
-                return null;
-              }),
-              _buildTextField('Phone Number', (value) => phoneNumber = value,
-                  keyboardType: TextInputType.phone),
-              _buildTextField('Skills', (value) => skills = value),
-              _buildTextField('Tools', (value) => tools = value),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Checkbox(
-                    value: isGuarantor,
-                    activeColor: const Color(0xFF556B2F),
-                    onChanged: (value) {
-                      setState(() {
-                        isGuarantor = value ?? false;
-                      });
-                    },
-                  ),
-                  const Text(
-                    'هل ترغب أن تكون ضامنًا؟',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
+              if (!showAdditionalFields) ...[
+                _buildTextField('اسم المستخدم', _usernameController),
+                _buildTextField('البريد الإلكتروني', _emailController),
+                _buildPasswordField('كلمة المرور', _passwordController),
+                _buildPasswordField(
+                    'تأكيد كلمة المرور', _confirmPasswordController),
+                _buildTextField('رقم الهاتف', _phoneNumberController,
+                    keyboardType: TextInputType.phone),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isGuarantor,
+                      activeColor: const Color(0xFF556B2F),
+                      onChanged: (value) {
+                        setState(() {
+                          isGuarantor = value ?? false;
+                        });
+                      },
                     ),
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF556B2F),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                    const Text(
+                      'هل ترغب أن تكون ضامنًا؟',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    print('Sign up successful for: $username');
-                    print(
-                        'Profile Image Path: ${_profileImage?.path ?? "Default"}');
-                    print('Wants to be a guarantor: $isGuarantor');
-                  }
-                },
-                child: const Text(
-                  'Sign Up',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF556B2F),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        showAdditionalFields = true;
+                      });
+                    }
+                  },
+                  child: const Text(
+                    'التالي',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              _buildSignInOption(context),
+              ] else ...[
+                _buildTextField('المهارات', _skillsController),
+                _buildTextField('الأدوات', _toolsController),
+                _buildTextField(
+                    'المناطق التي يمكنك العمل فيها', _workAreasController),
+                _buildTextField('المحافظة', _governorateController),
+                _buildTextField('البلد/قرية/مخيم', _localityController),
+                _buildTextField('اسم الشارع', _streetNameController),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF556B2F),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              WorkerHomePage(), // قم بتعريف الصفحة هنا
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'إكمال التسجيل',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -171,38 +199,39 @@ class _SignUpWorkerState extends State<SignUpWorker> {
     );
   }
 
-  Widget _buildTextField(String label, Function(String) onChanged,
+  Widget _buildTextField(String label, TextEditingController controller,
       {TextInputType keyboardType = TextInputType.text}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: TextFormField(
+        controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Color(0xFF556B2F), fontSize: 12),
+          labelStyle: const TextStyle(color: Color(0xFF556B2F), fontSize: 16),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
           filled: true,
-          fillColor: const Color(0xFF556B2F).withOpacity(0.1),
+          fillColor: const Color(0xFF2E7D32).withOpacity(0.1),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please enter $label';
+            return 'الرجاء إدخال $label';
           }
           return null;
         },
-        onChanged: onChanged,
       ),
     );
   }
 
-  Widget _buildPasswordField(String label, Function(String) onChanged) {
+  Widget _buildPasswordField(String label, TextEditingController controller) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: TextFormField(
+        controller: controller,
         obscureText: !_isPasswordVisible,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Color(0xFF556B2F), fontSize: 12),
+          labelStyle: const TextStyle(color: Color(0xFF556B2F), fontSize: 16),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
           filled: true,
           fillColor: const Color(0xFF556B2F).withOpacity(0.1),
@@ -210,7 +239,7 @@ class _SignUpWorkerState extends State<SignUpWorker> {
             icon: Icon(
               _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
               color: const Color(0xFF556B2F),
-              size: 18,
+              size: 20,
             ),
             onPressed: () {
               setState(() {
@@ -221,40 +250,11 @@ class _SignUpWorkerState extends State<SignUpWorker> {
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please enter $label';
+            return 'الرجاء إدخال $label';
           }
           return null;
         },
-        onChanged: onChanged,
       ),
-    );
-  }
-
-  Widget _buildSignInOption(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          "Already have an account? ",
-          style: TextStyle(color: Colors.black54, fontSize: 12),
-        ),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginPage()),
-            );
-          },
-          child: const Text(
-            "Sign in",
-            style: TextStyle(
-              color: Color(0xFF556B2F),
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
