@@ -1,0 +1,60 @@
+name: ggrow_together
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^2.24.2
+  firebase_messaging: ^14.7.10
+  shared_preferences: ^2.0.15
+  http: ^1.2.2
+  intl: ^0.17.0
+  cupertino_icons: ^1.0.8
+  image_picker: ^1.1.2
+  carousel_slider: ^5.0.0
+  path_provider: ^2.1.5
+  url_launcher: ^6.3.1
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
+  location: ^5.0.0
+  google_maps_flutter: ^2.5.4
+  google_fonts: ^6.2.1
+  percent_indicator: ^4.2.4
+  html: ^0.15.0
+  intl_phone_number_input: ^0.7.4
+  cloud_firestore: ^4.17.5
+  cloud_functions: ^4.7.6
+  flutter_time_picker_spinner: ^2.0.0 # أو أحدث
+  jwt_decode: ^0.3.1
+  collection: ^1.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_rating_bar: ^4.0.0
+  
+flutter:
+  uses-material-design: true
+  assets:
+    - image/olive_background.jpeg
+    - image/welcome.png
+    - image/dis.png
+    - profilephoto/default-profile-photo.jpg
+    - image/land1.jpg
+    - image/land2.jpg
+    - image/gurantee.png
+    - image/defaultland.png
+    - image/normalland.png
+    - lands/ads1.png
+    - lands/ads2.png
+    - lands/ads3.png
+    - lands/ads4.png
