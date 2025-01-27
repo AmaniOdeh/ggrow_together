@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Test endpoint
 router.get('/', (req, res) => {
-  res.json({ message: 'Service 4 is working!' });
+    res.json({ message: 'Service 4 is working!' });
 });
 
 // Signup endpoint
@@ -13,6 +13,8 @@ router.post('/signup', signup4);
 
 // Get service details by user ID
 router.get('/createAd', authenticateJWT, getServiceByUser);
-//New endpoint to get user info:
+
+// New endpoint to get user info
 router.get('/myServiceDetails', authenticateJWT, getMyServiceDetails);
+
 module.exports = router;

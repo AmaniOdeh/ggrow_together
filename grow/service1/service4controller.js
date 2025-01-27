@@ -51,15 +51,15 @@ const signup4 = async (req, res) => {
 const getServiceByUser = async (req, res) => {
     try {
         const userId = req.user.id;
-        const service = await service4.findOne({_id : userId});
+        const service = await service4.findOne({ _id: userId });
         if (!service) {
             return res.status(404).json({ message: 'Service not found' });
         }
         res.status(200).json({
-           companyName: service.transportCompanyName, // Changed to transportCompanyName
+            companyName: service.transportCompanyName, // Changed to transportCompanyName
             contactNumber: service.phoneNumber,
             serviceID: service._id,
-            serviceType : "service4",
+            serviceType: "service4",
             latitude: service.latitude,
             longitude: service.longitude,
             serviceAddress: service.transportAddress,
@@ -73,26 +73,29 @@ const getServiceByUser = async (req, res) => {
         });
     }
 };
- const getMyServiceDetails = async (req, res) => {
-      try {
-          const userId = req.user.id;
-      const service = await service4.findOne({_id : userId});
-      if (!service) {
-        return res.status(404).json({ message: 'Service not found' });
-      }
+
+// Get my service details
+
+const getMyServiceDetails = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const service = await service4.findOne({_id : userId});
+        if (!service) {
+            return res.status(404).json({ message: 'Service not found' });
+        }
         res.status(200).json({
-            companyName: service.transportCompanyName, // Changed to transportCompanyName
-             contactNumber: service.phoneNumber,
-            serviceAddress: service.transportAddress,
-             latitude: service.latitude,
+             companyName: service.transportCompanyName, // Changed to pressName
+            contactNumber: service.phoneNumber,
+            serviceAddress: service. transportAddress,
+            latitude: service.latitude,
             longitude: service.longitude,
-           imageData: service.imageData,
-            serviceType: 'service4', // Add serviceType
+            imageData: service.imageData,
+            serviceType: 'service1', // Add serviceType
+            ownerName: service.ownerName,
         });
     } catch (error) {
-      console.error('Error getting my service details', error);
-      res.status(500).json({ message: 'Failed to get service details', details: error.message });
+        console.error('Error getting my service details', error);
+        res.status(500).json({ message: 'Failed to get service details', details: error.message });
     }
-  };
-
+};
 module.exports = { signup4, getServiceByUser, getMyServiceDetails };

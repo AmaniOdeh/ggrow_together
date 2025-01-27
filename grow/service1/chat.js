@@ -1,19 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const {
-  createChat,
-  addMessage,
-  getMessages,
-  getChatsByUser,
-  updateMessage,
-  deleteMessage,
-} = require("./messageController");
+    createChat,
+    addMessage,
+    getMessages,
+    getChatsByUser,
+    updateMessage,
+    deleteMessage,
+} = require("./messageController"); // استيراد messageController بشكل صحيح
 
 // إنشاء محادثة جديدة
 router.post("/", createChat);
 
 // إضافة رسالة إلى محادثة
-router.post("/:chatId/messages", addMessage);
+router.post("/:chatId/messages", addMessage); // تمرير addMessage كـ callback function
 
 // جلب الرسائل من محادثة معينة
 router.get("/:chatId/messages", getMessages);

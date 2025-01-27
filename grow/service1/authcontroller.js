@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { service1, service2, service3, service4, service5, User, Token } = require('../connection/types.js');
+const { service1, service2, service4, service5, User, Tokens } = require('../connection/types.js');
 const mongoose = require('mongoose');
 
 const login = async (req, res) => {
@@ -19,49 +19,56 @@ const login = async (req, res) => {
         ];
 
         for (const serviceItem of services) {
-          const serviceUser = await serviceItem.model.findOne({ phoneNumber: phoneNumber });
-          if (serviceUser) {
-             user = serviceUser;
-             userType = "owner";
-             serviceType = serviceItem.type;
-                if (!await bcrypt.compare(password, user.password)) {
-                    return res.status(400).json({ message: 'Invalid credentials, password does not match' });
-                 }
+            try {
+                const serviceUser = await serviceItem.model.findOne({ phoneNumber: phoneNumber });
+                if (serviceUser) {
+                user = serviceUser;
+                userType = "owner";
+                serviceType = serviceItem.type;
+                    if (!await bcrypt.compare(password, user.password)) {
+                        return res.status(400).json({ message: 'Invalid credentials, password does not match' });
+                    }
+                    const tokens = generateToken(user,userType, user._id);
+                    const tokenData = {
+                    userId: user._id,
+                    tokens,
+                    userType,
+                        phoneNumber: user.phoneNumber,
+                        serviceType : serviceType
+                    };
 
-                 const token = generateToken(user,userType, user._id);
-                  const tokenData = {
-                  userId: user._id,
-                   token,
-                   userType,
-                    phoneNumber: user.phoneNumber,
-                      serviceType : serviceType
-                 };
-
-                 return res.status(200).json({
-                     message: "Login successful!",
-                     token: token,
-                     role: userType,
-                       userId : user._id,
-                     serviceType : serviceType,
-                       user : user
-                  });
-          }
+                    return res.status(200).json({
+                        message: "Login successful!",
+                        token: tokens,
+                        role: userType,
+                        userId : user._id,
+                        serviceType : serviceType,
+                        user : user
+                    });
+                }
+            } catch(e) {
+              console.error("Error in findOne operation:", e);
+                continue;
+            }
         }
+        try{
          user = await User.findOne({ phoneNumber: phoneNumber });
-        if (!user) {
-              return res.status(404).json({ message: 'User not found, please signup' });
-          }
+            if (!user) {
+                return res.status(404).json({ message: 'User not found, please signup' });
+            }
 
-      if (!await bcrypt.compare(password, user.password)) {
+        if (!await bcrypt.compare(password, user.password)) {
         return res.status(400).json({ message: 'Invalid credentials, password does not match' });
         }
 
-     // Generate a JWT token
-       const token = generateToken(user, "worker", user._id);
-
-         res.status(200).json({ message: 'Login successful!', token: token, role: 'worker', userId : user._id , user : user});
-
-  } catch (error) {
+        // Generate a JWT token
+        const tokens = generateToken(user, "worker", user._id);
+        return res.status(200).json({ message: 'Login successful!', token: tokens, role: 'worker', userId : user._id , user : user});
+    }  catch (e) {
+       console.error("Error in findOne operation:", e);
+        return res.status(500).json({ message: "An error occurred", details : e.message });
+    }
+  }  catch (error) {
       console.error("Error logging in user:", error);
         res.status(500).json({ message: "An error occurred", details : error.message });
   }

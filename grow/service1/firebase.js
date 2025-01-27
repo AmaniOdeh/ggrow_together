@@ -5,13 +5,18 @@ process.env.GOOGLE_APPLICATION_CREDENTIALS = "./config/groww-b9a54-firebase-admi
 
 // تهيئة Firebase Admin SDK
 if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.cert(require(process.env.GOOGLE_APPLICATION_CREDENTIALS)),
-      databaseURL: "https://groww-b9a54-default-rtdb.firebaseio.com" // تأكد من صحة URL الخاص بمشروعك
-    });
+    try{
+        admin.initializeApp({
+          credential: admin.credential.cert(require(process.env.GOOGLE_APPLICATION_CREDENTIALS)),
+          databaseURL: process.env.DATABASE_URL || "https://groww-b9a54-default-rtdb.firebaseio.com"
+        });
+      console.log('Firebase Admin SDK initialized successfully'); // تسجيل النجاح
+    } catch(error){
+      console.error('Failed to initialize Firebase Admin SDK', error)
+     }
 }
 
-// دالة لإرسال الإشعارات
+// دالة لإرسال الإشعارات (مثال)
 const sendFirebaseNotification = async (fcmToken, title, body) => {
     try {
         const message = {
@@ -25,6 +30,4 @@ const sendFirebaseNotification = async (fcmToken, title, body) => {
     }
 };
 
-// مثال على إرسال إشعار
-const fcmToken = 'dPCG64o9SweAEKXEwJv7FM:APA91bHu650J_2ofLi_L0Mcclr9yJxZWCEQIpua2Q5fxjqdQDPv4rnRD9-c2LlxBBTIz-vdyhoXbBhgT0O4A5D-qpNpdH5kH37AtiyBt7QCcO4X56xxw5mE';
-sendFirebaseNotification(fcmToken, 'عنوان الإشعار', 'هذا هو نص الإشعار');
+module.exports = { admin, sendFirebaseNotification };

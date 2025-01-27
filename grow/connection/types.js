@@ -1,20 +1,19 @@
 const mongoose = require('mongoose');
 
 // موديل المعاصر
-const userSchema = new mongoose.Schema({
+const pressSchema = new mongoose.Schema({
     pressName: { type: String, required: true, trim: true },
     ownerName: { type: String, required: true, trim: true },
     phoneNumber: { type: String, required: true, trim: true },
     pressAddress: { type: String, required: true, trim: true },
     latitude: { type: Number, required: true },
-    longitude: { type:Number, required: true },
+    longitude: { type: Number, required: true },
     facebookLink: { type: String, required: false, trim: true },
     password: { type: String, required: true },
     imageData: { type: String, default: '' }  // إضافة حقل الصورة
 }, { timestamps: true });
 
-const service1 = mongoose.model('service1', userSchema);
-
+const service1 = mongoose.model('service1', pressSchema);
 
 // موديل المطاحن
 const millSchema = new mongoose.Schema({
@@ -26,46 +25,44 @@ const millSchema = new mongoose.Schema({
     longitude: { type: Number, required: true },
     facebookLink: { type: String, required: false, trim: true },
     password: { type: String, required: true },
-    imageData: { type: String, default: '' } // إضافة حقل الصورة
+    imageData: { type: String, default: '' }, // إضافة حقل الصورة
+    // يمكن إضافة حقول إضافية خاصة بالمطاحن هنا
 }, { timestamps: true });
 
 const service2 = mongoose.model('service2', millSchema);
 
-
-
-
-
-// موديل النقليات
-const transportSchema = new mongoose.Schema({
-    transportCompanyName: { type: String, required: true, trim: true },
-    ownerName: { type: String, required: true, trim: true },
-    phoneNumber: { type: String, required: true, trim: true },
-    latitude: { type:Number, required: true },
+const service4Schema = new mongoose.Schema({
+    transportCompanyName: { type: String, required: true },
+    ownerName: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
+    latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
-    facebookLink: { type: String, required: false, trim: true },
+    transportAddress: { type: String, required: true },
+    facebookLink: { type: String, default: '' },
     password: { type: String, required: true },
-    imageData: { type: String, default: '' } // إضافة حقل الصورة
-}, { timestamps: true });
+    imageData: { type: String, required: true }
+});
 
-const service4 = mongoose.model('service4', transportSchema);
+const service4 = mongoose.model('Service4', service4Schema);
 
 
-// موديل المنتجات الزراعية
-const productSchema = new mongoose.Schema({
+// موديل المتاجر (المنتجات الزراعية)
+const storeSchema = new mongoose.Schema({
     storeName: { type: String, required: true, trim: true },
     ownerName: { type: String, required: true, trim: true },
     phoneNumber: { type: String, required: true, trim: true },
     storeAddress: { type: String, required: true, trim: true },
-    latitude: { type:Number, required: true },
+    latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
     facebookLink: { type: String, required: false, trim: true },
     password: { type: String, required: true },
-    imageData: { type: String, default: '' } // إضافة حقل الصورة
+    imageData: { type: String, default: '' }, // إضافة حقل الصورة
+    // يمكن إضافة حقول إضافية خاصة بالمتاجر هنا
 }, { timestamps: true });
 
-const service5 = mongoose.model('service5', productSchema);
+const service5 = mongoose.model('service5', storeSchema);
 
-
+// موديل الإعلانات
 const adSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
     serviceType: { type: String, required: true, enum: ['service1', 'service2', 'service3', 'service4', 'service5'] },
@@ -83,8 +80,7 @@ const adSchema = new mongoose.Schema({
 
 const Ad = mongoose.model('Ad', adSchema);
 
-
-
+// موديل التوكن
 const tokenSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
     token: { type: String, required: true },
@@ -93,44 +89,88 @@ const tokenSchema = new mongoose.Schema({
     phoneNumber: { type: String, trim: true, required: true }
 }, { timestamps: true });
 
-const Token = mongoose.model('Token', tokenSchema);
+const Tokens = mongoose.model('Tokens', tokenSchema);
 
-
+// موديل المستخدم العام
 const userSchemaGeneric = new mongoose.Schema({
     phoneNumber: { type: String, required: true, trim: true, unique: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    displayName: { type: String, required: true, trim: true } // اسم المستخدم الجديد
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchemaGeneric);
 
 
+// موديل المحادثات
 const chatSchema = new mongoose.Schema(
     {
-    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    messages: [
-        {
-        sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-        text: { type: String, required: true },
-          timestamp: { type: Date, default: Date.now }
-        },
-      ],
+        participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+        messages: [
+            {
+                sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+                text: { type: String, required: true },
+                timestamp: { type: Date, default: Date.now }
+            },
+        ],
     },
     { timestamps: true }
-    );
- const Chat = mongoose.model("Chat", chatSchema);
-const ownerSchema = new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+);
+
+const Chats = mongoose.model("Chats", chatSchema);
+
+
+
+// موديل إعلانات النقليات
+const transportAdSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    ownerName: { type: String, required: true, trim: true },
+    companyName: { type: String, required: true, trim: true },
+    contactNumber: { type: String, required: true, trim: true },
+    adDetails: { type: String, required: true, trim: true },
+    serviceAddress: { type: String, trim: true },
+    latitude: { type: Number },
+    longitude: { type: Number },
+}, { timestamps: true });
+
+const TransportAd = mongoose.model('TransportAd', transportAdSchema);
+
+// موديل العقود (يجب أن يكون قبل التصدير)
+
+const contractSchema = new mongoose.Schema(
+    {
+      adId: { type: mongoose.Schema.Types.ObjectId, ref: 'TransportAd', required: true },
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      companyName: { type: String, required: true, trim: true },
+      contactNumber: { type: String, required: true, trim: true },
+      adDetails: { type: String, required: true, trim: true },
+      transportCompanyName: { type: String, required: true, trim: true },
+      transportOwnerName: { type: String, required: true, trim: true },
+      transportPhoneNumber: { type: String, required: true, trim: true },
+    },
+    { timestamps: true }
+  );
   
+  const Cont = mongoose.model('Cont', contractSchema);
 
-    ownerName: { type: String, required: true },
-    contactNumber: { type: String, required: true },
-    role: { type: String, default: 'Owner' },  // إضافة حقل role
-    Status: { type: String, default: 'active' }, // إضافة حقل role
 
-}, { collection: 'Owner' });
+  const combinedAdSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    companyName: { type: String, required: true, trim: true },     // اسم المعصرة
+    contactNumber: { type: String, required: true, trim: true },   // رقم المعصرة
+    transportCompanyName: { type: String, required: true, trim: true },// اسم شركة النقل
+    transportPhoneNumber: { type: String, required: true, trim: true },// رقم شركة النقل
+    ownerName:{type:String, required: true, trim: true},  // اسم المالك
+    adDetails: { type: String, required: true, trim: true }, // تفاصيل الإعلان
+     serviceAddress: { type: String, trim: true },
+     latitude: { type: Number },
+    longitude: { type: Number },
+     openingHours: { type: String }, // بداية الوقت بصيغة نص
+    workingHours: { type: String },   // نهاية الوقت بصيغة نص
+}, { timestamps: true });
 
-const Owner = mongoose.model('Owner', ownerSchema);
+const CombinedAd = mongoose.model('CombinedAd', combinedAdSchema); 
+
+
 const workerSchema = new mongoose.Schema(
     {
         email: {
@@ -214,5 +254,34 @@ const workerSchema = new mongoose.Schema(
 );
 
 const Worker = mongoose.model('Worker', workerSchema);
+const ownerSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+  
 
-module.exports = { service1, service2, service4, service5, Ad, Token, User ,Chat,Owner,Worker};
+    ownerName: { type: String, required: true },
+    contactNumber: { type: String, required: true },
+    role: { type: String, default: 'Owner' },  // إضافة حقل role
+    Status: { type: String, default: 'active' }, // إضافة حقل role
+
+}, { collection: 'Owner' });
+
+const Owner = mongoose.model('Owner', ownerSchema);
+// تصدير جميع الموديلات
+module.exports = {
+    service1,
+    service2,
+    service4,
+    service5,
+    Ad,
+    Tokens,
+    User,
+    Chats,
+   
+    TransportAd,
+    Cont, 
+    CombinedAd,
+    Worker,
+    Owner// تأكد من وجود هذا السطر
+
+};

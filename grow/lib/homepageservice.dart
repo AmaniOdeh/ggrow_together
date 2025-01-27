@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'adsservice.dart';
+import 'combine.dart';
+import 'contractpage.dart';
 import 'createads.dart';
 import 'messageservice.dart';
 import 'myorderservice.dart';
 import 'notificationservice.dart';
 import 'profileservice.dart';
+import 'showali.dart';
+import 'transportads.dart';
+import 'trasget.dart';
 
 class HomePage extends StatefulWidget {
   final String serviceType;
@@ -40,13 +45,12 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.message, color: Color(0xFF556B2F)),
             onPressed: () {
-       Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => MessagesPage ( ),
-  ),
-);
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MessagesPage(  userId: widget.userId),
+                ),
+              );
             },
           ),
         ],
@@ -60,50 +64,202 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   _buildWelcomeCard(),
                   const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CreateAdPage(
-                            serviceType: widget.serviceType,
-                            userId: widget.userId,
-                          ),
+                  SizedBox(
+                    // استخدمنا SizedBox هنا لضبط حجم الزر
+                    width: double.infinity, // اجعل الزر يأخذ كامل العرض
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CreateAdPage(
+                                      serviceType: widget.serviceType,
+                                      userId: widget.userId,
+                                    )));
+                      },
+                      icon: const Icon(Icons.add, color: Colors.white),
+                      label: const Text(
+                        "أنشئ إعلانك الخاص",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white), // تصغير حجم الخط قليلاً
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF556B2F),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12), // تقليل الحجم العامودي
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.add, color: Colors.white),
-                    label: const Text(
-                      "أنشئ إعلانك الخاص",
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF556B2F),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
+                  if (widget.serviceType ==
+                      "service1") // اظهار الزر الخاص بالمعصرة فقط
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: 150, // تحديد عرض الزر
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TransportAdsPage(
+                                    serviceType: widget.serviceType,
+                                    userId: widget.userId,
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.local_shipping,
+                                color: Colors.white, size: 20),
+                            label: const Text(
+                              "إعلان خاص للنقليات",
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF556B2F),
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (widget.serviceType ==
+                      "service1") // زر عرض اعلانات النقليات الخاصة بي (المعصرة)
+                    SizedBox(
+                      width: double.infinity, // اجعل الزر يأخذ كامل العرض
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AdsManagementPage(userId: widget.userId
+                                      //عرض اعلانات النقليات الخاصة بي
+                                      ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.local_shipping,
+                            color: Colors.white, size: 20),
+                        label: const Text(
+                          "إعلاناتي للنقليات",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF556B2F),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (widget.serviceType ==
+                      "service4") // زر عرض اعلانات النقليات (المعصرة)
+                    SizedBox(
+                      width: double.infinity, // اجعل الزر يأخذ كامل العرض
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TransportAdsListPage(
+                                serviceType: 'service4', // عرض إعلانات النقل
+                                userId: widget.userId,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.local_shipping,
+                            color: Colors.white, size: 20),
+                        label: const Text(
+                          "عرض إعلانات المعاصر",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF556B2F),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 20),
+                  if (widget.serviceType == "service4" ||
+                      widget.serviceType == "service1")
+                    SizedBox(
+                      width: double.infinity, // اجعل الزر يأخذ كامل العرض
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CombinedAdsListPage(
+                                serviceType: widget.serviceType,
+                                userId: widget.userId,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.announcement,
+                            color: Colors.white, size: 20),
+                        label: const Text(
+                          "عرض الإعلانات المشتركة",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF556B2F),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 20),
+                  if (widget.serviceType == "service4" ||
+                      widget.serviceType == "service1")
+                    SizedBox(
+                      width: double.infinity, // اجعل الزر يأخذ كامل العرض
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ContractListPage(
+                                serviceType: widget.serviceType,
+                                userId: widget.userId,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.assignment,
+                            color: Colors.white, size: 20),
+                        label: const Text(
+                          "عرض عقود العمل",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF556B2F),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 20),
                   _buildSectionHeader("الطلبات"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildOrderProgress(
-                        title: "مكتملة",
-                        count: 4309,
-                        progress: 4309 / (4309 + 1302),
-                        color: Colors.green,
-                      ),
-                      _buildOrderProgress(
-                        title: "قيد التنفيذ",
-                        count: 1302,
-                        progress: 1302 / (4309 + 1302),
-                        color: Colors.lightGreen,
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -265,10 +421,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.home),
             label: 'الرئيسية',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'بحث',
-          ),
+        
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),
             label: 'الإشعارات',
@@ -282,6 +435,7 @@ class _HomePageState extends State<HomePage> {
           switch (index) {
             case 0:
               break;
+           
             case 2:
               Navigator.push(
                 context,

@@ -151,23 +151,24 @@ class _MyAdsPageState extends State<MyAdsPage> {
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
               ),
-              child: Image.memory(
-                base64Decode(ad["imageData"]),
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (BuildContext context, Object exception,
-                    StackTrace? stackTrace) {
-                  print('Error loading image: ${ad["imageData"]}');
-                  print('Exception: $exception');
-                  print('Stack Trace: $stackTrace');
-                  return const SizedBox(
-                    height: 200,
-                    child: Center(
-                        child: Icon(Icons.image_not_supported,
-                            size: 60, color: Colors.grey)),
-                  );
-                },
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Image.memory(
+                  base64Decode(ad["imageData"]),
+                  width: double.infinity,
+                  fit: BoxFit.contain,
+                  errorBuilder: (BuildContext context, Object exception,
+                      StackTrace? stackTrace) {
+                    print('Error loading image: ${ad["imageData"]}');
+                    print('Exception: $exception');
+                    print('Stack Trace: $stackTrace');
+                    return const SizedBox(
+                      child: Center(
+                          child: Icon(Icons.image_not_supported,
+                              size: 60, color: Colors.grey)),
+                    );
+                  },
+                ),
               ),
             ),
           Padding(
@@ -179,7 +180,6 @@ class _MyAdsPageState extends State<MyAdsPage> {
                 _buildDetailRow("رقم التواصل:", ad["contactNumber"] ?? ''),
                 _buildDetailRow(
                     "نوع الخدمة:", _mapServiceType(ad["serviceType"] ?? '')),
-                _buildDetailRow("سعر الخصم:", ad["discountPrice"] ?? ''),
                 _buildDetailRow("تفاصيل الإعلان:", ad["adDetails"] ?? ''),
                 InkWell(
                   onTap: () {
@@ -311,12 +311,6 @@ class _MyAdsPageState extends State<MyAdsPage> {
                       tempServiceType = _getServiceTypeKey(value);
                       setState(() {});
                     },
-                  ),
-                  const SizedBox(height: 10),
-                  _buildEditableField(
-                    label: "سعر الخصم",
-                    initialValue: ad["discountPrice"] ?? '',
-                    onChanged: (value) => ad["discountPrice"] = value,
                   ),
                   const SizedBox(height: 10),
                   _buildEditableField(
@@ -496,21 +490,38 @@ class _MyAdsPageState extends State<MyAdsPage> {
 
       print("Fields to Update: $fieldsToUpdate");
 
-      final response = await http.put(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(fieldsToUpdate), // ترميز البيانات إلى JSON
-      );
+      final request = http.MultipartRequest('PUT', Uri.parse(apiUrl));
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'multipart/form-data',
+      });
+      fieldsToUpdate.forEach((key, value) {
+        request.fields[key] = value.toString();
+      });
+
+      if (image != null) {
+        final imageBytes = await image.readAsBytes();
+        final multipartFile = http.MultipartFile.fromBytes(
+            'imageData', imageBytes,
+            filename: 'image.jpg');
+        request.files.add(multipartFile);
+      }
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
 
       print('Response Status Code: ${response.statusCode}');
       print('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        _fetchUserAds();
-        _showSuccessPopup('تم تعديل الإعلان بنجاح');
+        final decodedResponse = jsonDecode(response.body);
+        if (decodedResponse != null &&
+            decodedResponse['message'] == "success") {
+          _fetchUserAds();
+          _showSuccessPopup('تم تعديل الإعلان بنجاح');
+        } else {
+          _handleApiError(response.statusCode, response.body);
+        }
       } else {
         _handleApiError(response.statusCode, response.body);
       }
@@ -549,8 +560,14 @@ class _MyAdsPageState extends State<MyAdsPage> {
       print('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        _fetchUserAds();
-        _showSuccessPopup('تم حذف الإعلان بنجاح');
+        final decodedResponse = jsonDecode(response.body);
+        if (decodedResponse != null &&
+            decodedResponse['message'] == "success") {
+          _fetchUserAds();
+          _showSuccessPopup('تم حذف الإعلان بنجاح');
+        } else {
+          _handleApiError(response.statusCode, response.body);
+        }
       } else {
         _handleApiError(response.statusCode, response.body);
       }

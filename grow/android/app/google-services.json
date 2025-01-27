@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "231500905543",
+    "firebase_url": "https://groww-b9a54-default-rtdb.firebaseio.com",
+    "project_id": "groww-b9a54",
+    "storage_bucket": "groww-b9a54.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:231500905543:android:46e53c4fb4223b4203c562",
+        "android_client_info": {
+          "package_name": "com.example.ggrow_together"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuLWoxybHkaK0jhfBOE9IKCkcCxn2bYyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
